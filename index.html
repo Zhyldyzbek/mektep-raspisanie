@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Мектеп — Система школьного расписания</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root { --sidebar-w: 260px; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #f1f5f9; }
+    .sidebar { width: var(--sidebar-w); }
+    .main-content { margin-left: var(--sidebar-w); }
+    @media (max-width: 1024px) {
+      .sidebar { transform: translateX(-100%); position: fixed; z-index: 50; height: 100vh; }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; }
+      .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 40; }
+      .sidebar-overlay.show { display: block; }
+    }
+    .nav-item.active { background: #2563eb; color: #fff; }
+    .toast { animation: slideIn .3s ease; }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @media (max-width: 768px) { .desktop-table { display: none; } .mobile-cards { display: block; } }
+    @media (min-width: 769px) { .desktop-table { display: table; } .mobile-cards { display: none; } }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+  <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <aside id="sidebar" class="sidebar fixed top-0 left-0 h-full bg-white border-r flex flex-col z-50">
+    <div class="p-5 border-b flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-blue-600 text-white font-bold flex items-center justify-center">М</div>
+      <div><div class="font-bold">Мектеп</div><div class="text-xs text-slate-500">Расписание</div></div>
+    </div>
+    <nav class="flex-1 overflow-y-auto py-3 px-3 space-y-0.5">
+      <a href="#" data-page="dashboard" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium">Главная</a>
+      <a href="#" data-page="schedule" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600">Расписание</a>
+      <a href="#" data-page="teachers" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600">Учителя</a>
+      <a href="#" data-page="workload" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600">Нагрузка</a>
+      <a href="#" data-page="classes" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600">Классы</a>
+      <a href="#" data-page="subjects" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600">Предметы</a>
+      <a href="#" data-page="bop" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600">БОП</a>
+      <a href="#" data-page="rooms" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600">Кабинеты</a>
+      <a href="#" data-page="wishes" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600">Пожелания</a>
+      <a href="#" data-page="check" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600">Проверка</a>
+      <a href="#" data-page="settings" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600">Настройки</a>
+    </nav>
+    <div class="p-4 border-t text-xs text-slate-400">Учебный год: <span id="schoolYear">2026–2027</span></div>
+  </aside>
+  <div class="main-content min-h-screen">
+    <header class="bg-white border-b sticky top-0 z-30 px-4 py-3 flex items-center gap-3">
+      <button onclick="toggleSidebar()" class="lg:hidden p-2"><i class="fas fa-bars"></i></button>
+      <input id="globalSearch" class="flex-1 max-w-md px-3 py-2 text-sm border rounded-lg" placeholder="Поиск..." oninput="handleGlobalSearch(this.value)">
+    </header>
+    <main id="pageContent" class="p-4 md:p-6"></main>
+  </div>
+  <div id="toastContainer" class="fixed bottom-4 right-4 z-[100] space-y-2 max-w-sm"></div>
+  <div id="modalContainer"></div>
+  <script src="app.js"></script>
+</body>
+</html>
